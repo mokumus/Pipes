@@ -24,6 +24,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2F84D155244DC64D0070D912 /* sample1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sample1.txt; sourceTree = "<group>"; };
+		2F84D156244DC64E0070D912 /* sample3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sample3.txt; sourceTree = "<group>"; };
+		2F84D157244DC64E0070D912 /* sample2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sample2.txt; sourceTree = "<group>"; };
+		2F84D158244DC64E0070D912 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		2F84D159244DC64E0070D912 /* rapor.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rapor.pdf; sourceTree = "<group>"; };
+		2F84D15A244DC64E0070D912 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
 		2F8F79B8244B32D200FF670A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		2FEE4425244B31FE0087F364 /* Pipes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Pipes; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FEE4428244B31FE0087F364 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -69,6 +75,12 @@
 				2FEE4431244B32530087F364 /* parser.h */,
 				2FEE4432244B32530087F364 /* parser.c */,
 				2F8F79B8244B32D200FF670A /* globals.h */,
+				2F84D15A244DC64E0070D912 /* makefile */,
+				2F84D159244DC64E0070D912 /* rapor.pdf */,
+				2F84D158244DC64E0070D912 /* README.txt */,
+				2F84D155244DC64D0070D912 /* sample1.txt */,
+				2F84D157244DC64E0070D912 /* sample2.txt */,
+				2F84D156244DC64E0070D912 /* sample3.txt */,
 			);
 			path = Pipes;
 			sourceTree = "<group>";

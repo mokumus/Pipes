@@ -396,11 +396,11 @@ void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
     
     if(read(fd_p[0], buffer1, n2_x_n2/2) < n2_x_n2/2){
         fprintf(stderr,"Not enough bytes to read: process_quarter() buf1\n");
-        exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
     }
     if(read(fd_p[0], buffer2, n2_x_n2/2) < n2_x_n2/2){
         fprintf(stderr,"Not enough bytes to read: process_quarter() buf2\n");
-        exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
     }
 
     multiply_matrices(buffer1, buffer2, result);
@@ -456,7 +456,7 @@ int get_i_j(int i, int j, char * matrix, int rows){
         return (int) matrix[i*rows+j];
     else{
         fprintf(stderr, "FATAL ERROR\nIndex ij out of range : (%d, %d)\n", i, j);
-        exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
     }
 }
 
@@ -549,7 +549,6 @@ void svd(double **A, double *S2, int n){
         printf("Warning: Reached maximum number of sweeps (%d) in SVD routine...\n" ,slimit);
 }
 
-
 void handle_SIGINT(int sig_no){
     if(sig_no == SIGINT){
         //Terminate children
@@ -557,7 +556,7 @@ void handle_SIGINT(int sig_no){
             kill(pid[i], SIGTERM);
         }
         fprintf(stderr, "Aborting program due to SIGINT\n");
-        exit(EXIT_FAILURE);
+        cleanup();
     }
     else{
         fprintf(stderr, "Signal handler called, no action\n");

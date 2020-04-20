@@ -1,0 +1,31 @@
+Input 1 path : input1.txt
+Input 2 path : input2.txt
+N: 2
+I'm the father [pid: 1883, ppid: 1224]
+Matrix A:
+! ! ! ! 
+% % % % 
+* * * * 
++ + + + 
+Matrix B:
+! ! ! ! 
+% % % % 
+* * * * 
++ + + + 
+Matrix C:
+[
+[5115.000, 5115.000, 5115.000, 5115.000],
+[5735.000, 5735.000, 5735.000, 5735.000],
+[6510.000, 6510.000, 6510.000, 6510.000],
+[6665.000, 6665.000, 6665.000, 6665.000],
+]
+Singular Values Squared:
+[583423100.000, 0.000, 0.000, 0.000]
+Freeing buffer 1: matrix1_buffer
+Freeing buffer 2: matrix2_buffer
+Freeing buffer 3: required_quarters1
+Freeing buffer 4: required_quarters2
+Freeing buffer 5: combined_result
+Freeing buffer 6: singular_values
+Closing input file 1, descriptor: 19
+Closing input file 2, descriptor: 20
