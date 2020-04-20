@@ -24,7 +24,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2F5D94FB244D2939000F20A1 /* singular_value_decomposition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = singular_value_decomposition.h; sourceTree = "<group>"; };
 		2F8F79B8244B32D200FF670A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		2FEE4425244B31FE0087F364 /* Pipes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Pipes; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FEE4428244B31FE0087F364 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -70,7 +69,6 @@
 				2FEE4431244B32530087F364 /* parser.h */,
 				2FEE4432244B32530087F364 /* parser.c */,
 				2F8F79B8244B32D200FF670A /* globals.h */,
-				2F5D94FB244D2939000F20A1 /* singular_value_decomposition.h */,
 			);
 			path = Pipes;
 			sourceTree = "<group>";
