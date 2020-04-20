@@ -173,7 +173,6 @@ int main(int argc, char * argv[]) {
             write(fd_p2[1], required_quarters1, strlen(required_quarters1));
             write(fd_p2[1], required_quarters2, strlen(required_quarters2));
            
-            
             // Parent is writing
             // [A11, A12] [B12, B22] combined in required_quarters
             get_quarter_row(matrix1_buffer, required_quarters1, 0);
@@ -181,14 +180,12 @@ int main(int argc, char * argv[]) {
             write(fd_p3[1], required_quarters1, strlen(required_quarters1));
             write(fd_p3[1], required_quarters2, strlen(required_quarters2));
         
-            
             // Parent is writing
             // [A12, A22] [B11, B21] combined in required_quarters
             get_quarter_row(matrix1_buffer, required_quarters1, 1);
             get_quarter_column(matrix2_buffer, required_quarters2, 0);
             write(fd_p4[1], required_quarters1, strlen(required_quarters1));
             write(fd_p4[1], required_quarters2, strlen(required_quarters2));
-        
 
             // Parent is writing
             // [A12, A22] [B12, B22] combined in required_quarters
@@ -197,7 +194,6 @@ int main(int argc, char * argv[]) {
             write(fd_p5[1], required_quarters1, strlen(required_quarters1));
             write(fd_p5[1], required_quarters2, strlen(required_quarters2));
        
-            
             if(close(fd_p2[1]) == -1 || close(fd_p3[1]) == -1 || close(fd_p4[1]) == -1 || close(fd_p5[1]) == -1){
                 fprintf(stderr, "Used write close error : Parent > Childeren\n");
                 exit(EXIT_FAILURE);
@@ -214,7 +210,6 @@ int main(int argc, char * argv[]) {
                 exit(EXIT_FAILURE);
             }
             // =====================================Wait for all the childeren
-            
             
             // Gather childeren outputs=======================================
             
@@ -237,7 +232,7 @@ int main(int argc, char * argv[]) {
                     combined_result[i][j] = buffer_int;
                 }
             }
-            
+
             // ======================================= Gather childeren outputs
             
             //Display Matrix A
@@ -257,13 +252,10 @@ int main(int argc, char * argv[]) {
             svd(combined_result, singular_values, n2);
             display_arr(singular_values, n2);
             
-
-            
             if(close(cfd_p2[0]) == -1 || close(cfd_p3[0]) == -1 || close(cfd_p4[0]) == -1 || close(cfd_p5[0]) == -1){
                 fprintf(stderr, "Used write close error : Children > Parent\n");
                 exit(EXIT_FAILURE);
             }
-
             
         // ===================================================================
             
@@ -378,7 +370,6 @@ void get_quarter_row(char * matrix, char * row, int T_B){
             k++;
         }
     }
-    
     row[m] = '\0';
     //printf("row: %s\n", row);
 }
@@ -397,7 +388,6 @@ void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
         exit(EXIT_FAILURE);
     }
     
-    
     //Close not needed ends
     close(fd_p[1]);
     close(cfd_p[0]);
@@ -414,8 +404,6 @@ void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
     }
 
     multiply_matrices(buffer1, buffer2, result);
-    //display_arr(result, n2_x_n2/4);
-    
     
     //Child writing to pipe
     //write(cfd_p[1], "Hello father\n", strlen("Hello father\n"));
@@ -424,14 +412,12 @@ void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
         write(cfd_p[1], &result[i], sizeof(int));
     }
     
-    
     // Close remaining ends
     close(fd_p[0]);
     close(cfd_p[1]);
     
     free(buffer1);
     free(buffer2);
-
 }
 
 void multiply_matrices(char *m1, char *m2, int *result){
