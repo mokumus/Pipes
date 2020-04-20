@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2FEE4429244B31FE0087F364 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2FEE4428244B31FE0087F364 /* main.c */; };
+		2FEE4433244B32530087F364 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 2FEE4432244B32530087F364 /* parser.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +24,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2F5D94FB244D2939000F20A1 /* singular_value_decomposition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = singular_value_decomposition.h; sourceTree = "<group>"; };
+		2F8F79B8244B32D200FF670A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		2FEE4425244B31FE0087F364 /* Pipes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Pipes; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FEE4428244B31FE0087F364 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		2FEE442F244B322C0087F364 /* input1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = input1.txt; sourceTree = "<group>"; };
+		2FEE4430244B323D0087F364 /* input2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = input2.txt; sourceTree = "<group>"; };
+		2FEE4431244B32530087F364 /* parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
+		2FEE4432244B32530087F364 /* parser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = parser.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +65,12 @@
 			isa = PBXGroup;
 			children = (
 				2FEE4428244B31FE0087F364 /* main.c */,
+				2FEE442F244B322C0087F364 /* input1.txt */,
+				2FEE4430244B323D0087F364 /* input2.txt */,
+				2FEE4431244B32530087F364 /* parser.h */,
+				2FEE4432244B32530087F364 /* parser.c */,
+				2F8F79B8244B32D200FF670A /* globals.h */,
+				2F5D94FB244D2939000F20A1 /* singular_value_decomposition.h */,
 			);
 			path = Pipes;
 			sourceTree = "<group>";
@@ -119,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FEE4433244B32530087F364 /* parser.c in Sources */,
 				2FEE4429244B31FE0087F364 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
