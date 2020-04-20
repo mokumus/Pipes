@@ -9,33 +9,54 @@
 #include "globals.h"
 #include "parser.h"
 
-// Allocated buffers & file poitners needs to be visible to exit handler, cleanup()
+// Allocated buffers & file pointers needs to be visible to exit handler, cleanup()
 char *matrix1_buffer, *matrix2_buffer, *required_quarters1, *required_quarters2;
+double **combined_result, * singular_values;
 int i1_fd, i2_fd;
+int n2;
+pid_t pid[4];
+// Prototypes =============================================================
 
-void cleanup(void);
-void get_quarter_column(char * matrix, char * column, int n2, int L_R);
-void get_quarter_row(char * matrix, char * row, int n2, int T_B);
-void process_quarter(int *cfd_p, int *fd_p, int n2, const char *name_str);
-void multiply_matrices(char *m1, char *m2, int n2, int *result);
-void print_matrix(char *matrix, int n2, int ascii);
-int get_i_j(int i, int j, char * matrix, int n2);
-void display_arr(double *array, int n);
-void display_arr_2d(double **array, int n);
+// Input parsing and processing
+int get_i_j(int i, int j, char * matrix, int n);
+void get_quarter_column(char * matrix, char * column, int L_R);
+void get_quarter_row(char * matrix, char * row, int T_B);
+void process_quarter(int *cfd_p, int *fd_p, const char *name_str);
+void multiply_matrices(char *m1, char *m2, int *result);
+
+//Singular Value Decomposition
 void svd(double **A, double *S2, int n);
 
+//Exit handler
+void cleanup(void);
 
+//Signal handling
+void handle_SIGINT(int sig_no);
+
+//Utility
+void print_matrix(char *matrix, int n2, int ascii);
+void display_arr(double *array, int n);
+void display_arr_2d(double **array, int n);
+// ============================================================= Prototypes
 
 int main(int argc, char * argv[]) {
     char input1_path[255], input2_path[255];
-    double **combined_result, * singular_values;
-    int status, n, n2, n2_x_n2, buffer_int;
+    int status, n, n2_x_n2, buffer_int;
     int fd_p2[2], fd_p3[2], fd_p4[2], fd_p5[2];
     int cfd_p2[2], cfd_p3[2], cfd_p4[2], cfd_p5[2];
     ssize_t required_size;
-    pid_t pid[4], wpid;
+    pid_t  wpid;
+    struct stat st1;
+    struct stat st2;
+    struct sigaction sa;
     
+    //Set up exit handler
     atexit(cleanup);
+    
+    //Set up singal handler
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = &handle_SIGINT;
+    sigaction(SIGINT, &sa, NULL);
     
     // Test argument validity and open files==================================
     status = parse_arguments(input1_path, input2_path, &n, argc, argv);
@@ -80,7 +101,7 @@ int main(int argc, char * argv[]) {
                 exit(EXIT_FAILURE);
             }
             
-            struct stat st1;
+            
             stat(input1_path, &st1);
             ssize_t file_size1 = st1.st_size;
             
@@ -98,7 +119,7 @@ int main(int argc, char * argv[]) {
                 exit(EXIT_FAILURE);
             }
             
-            struct stat st2;
+            
             stat(input2_path, &st2);
             ssize_t file_size2 = st2.st_size;
             
@@ -147,32 +168,32 @@ int main(int argc, char * argv[]) {
         
             // Parent is writing
             // [A11, A12] [B11, B21] combined in required_quarters
-            get_quarter_row(matrix1_buffer, required_quarters1, n2, 0);
-            get_quarter_column(matrix2_buffer, required_quarters2, n2, 0);
+            get_quarter_row(matrix1_buffer, required_quarters1, 0);
+            get_quarter_column(matrix2_buffer, required_quarters2, 0);
             write(fd_p2[1], required_quarters1, strlen(required_quarters1));
             write(fd_p2[1], required_quarters2, strlen(required_quarters2));
            
             
             // Parent is writing
             // [A11, A12] [B12, B22] combined in required_quarters
-            get_quarter_row(matrix1_buffer, required_quarters1, n2, 0);
-            get_quarter_column(matrix2_buffer, required_quarters2, n2, 1);
+            get_quarter_row(matrix1_buffer, required_quarters1, 0);
+            get_quarter_column(matrix2_buffer, required_quarters2, 1);
             write(fd_p3[1], required_quarters1, strlen(required_quarters1));
             write(fd_p3[1], required_quarters2, strlen(required_quarters2));
         
             
             // Parent is writing
             // [A12, A22] [B11, B21] combined in required_quarters
-            get_quarter_row(matrix1_buffer, required_quarters1, n2, 1);
-            get_quarter_column(matrix2_buffer, required_quarters2, n2, 0);
+            get_quarter_row(matrix1_buffer, required_quarters1, 1);
+            get_quarter_column(matrix2_buffer, required_quarters2, 0);
             write(fd_p4[1], required_quarters1, strlen(required_quarters1));
             write(fd_p4[1], required_quarters2, strlen(required_quarters2));
         
 
             // Parent is writing
             // [A12, A22] [B12, B22] combined in required_quarters
-            get_quarter_row(matrix1_buffer, required_quarters1, n2, 1);
-            get_quarter_column(matrix2_buffer, required_quarters2, n2, 1);
+            get_quarter_row(matrix1_buffer, required_quarters1, 1);
+            get_quarter_column(matrix2_buffer, required_quarters2, 1);
             write(fd_p5[1], required_quarters1, strlen(required_quarters1));
             write(fd_p5[1], required_quarters2, strlen(required_quarters2));
        
@@ -197,7 +218,6 @@ int main(int argc, char * argv[]) {
             
             // Gather childeren outputs=======================================
             
-            
             combined_result = malloc(sizeof(double*)*n2*2);
             for(int i=0;i<2*n2;i++)
                  combined_result[i] = malloc(sizeof(double)*n2*2);
@@ -217,6 +237,9 @@ int main(int argc, char * argv[]) {
                     combined_result[i][j] = buffer_int;
                 }
             }
+            
+            // ======================================= Gather childeren outputs
+            
             //Display Matrix A
             printf("Matrix A:\n");
             print_matrix(matrix1_buffer, n2, 1);
@@ -234,15 +257,8 @@ int main(int argc, char * argv[]) {
             svd(combined_result, singular_values, n2);
             display_arr(singular_values, n2);
             
+
             
-            for(int i = 0; i <2* n2; i++){
-                free(combined_result[i]);
-            }
-            free(combined_result);
-            free(singular_values);
-
-
-            // ========================================Gather childeren outputs
             if(close(cfd_p2[0]) == -1 || close(cfd_p3[0]) == -1 || close(cfd_p4[0]) == -1 || close(cfd_p5[0]) == -1){
                 fprintf(stderr, "Used write close error : Children > Parent\n");
                 exit(EXIT_FAILURE);
@@ -256,26 +272,25 @@ int main(int argc, char * argv[]) {
 
             if(pid[0] == 0){
                 printf("I'm P2 [pid: %d, ppid: %d]\n",getpid(),getppid());
-                process_quarter(cfd_p2, fd_p2, n2, "P2");
+                process_quarter(cfd_p2, fd_p2, "P2");
                 exit(EXIT_SUCCESS);
             }
             else if(pid[1] == 0){
                 printf("I'm P3 [pid: %d, ppid: %d]\n",getpid(),getppid());
-                process_quarter(cfd_p3, fd_p3, n2, "P3");
+                process_quarter(cfd_p3, fd_p3, "P3");
                 exit(EXIT_SUCCESS);
             }
             else if(pid[2] == 0){
                 printf("I'm P4 [pid: %d, ppid: %d]\n",getpid(),getppid());
-                process_quarter(cfd_p4, fd_p4, n2, "P4");
+                process_quarter(cfd_p4, fd_p4, "P4");
                 exit(EXIT_SUCCESS);
                 
             }
             else if(pid[3] == 0){
                 printf("I'm P5 [pid: %d, ppid: %d]\n",getpid(),getppid());
-                process_quarter(cfd_p5, fd_p5, n2, "P5");
+                process_quarter(cfd_p5, fd_p5, "P5");
                 exit(EXIT_SUCCESS);
             }
-            
         }
         // ===================================================================
         
@@ -302,6 +317,18 @@ void cleanup(){
         printf("Freeing buffer 4: required_quarters2\n");
         free(required_quarters2);
     }
+    for(int i = 0; i <2*n2; i++){
+        if(combined_result[i] != NULL)
+            free(combined_result[i]);
+    }
+    if(combined_result != NULL){
+        printf("Freeing buffer 5: combined_result\n");
+        free(combined_result);
+    }
+    if(singular_values != NULL){
+        printf("Freeing buffer 6: singular_values\n");
+        free(singular_values);
+    }
     if(i1_fd >= 1){
         printf("Closing input file 1, descriptor: %d\n",i1_fd);
         close(i1_fd);
@@ -311,12 +338,13 @@ void cleanup(){
         printf("Closing input file 2, descriptor: %d\n",i2_fd);
         close(i2_fd);
     }
+    
     if(errno != 0 && errno != EINTR && errno != 34) // Ignore interrupted syscall error
         fprintf(stderr,"Uncaught error occured: %s\n", strerror(errno));
 }
 
 
-void get_quarter_column(char * matrix, char * column, int n2, int L_R){
+void get_quarter_column(char * matrix, char * column, int L_R){
     int k = 0, m = 0;
     int current_L_R = 0; // 0 Left, 1 Right
     
@@ -335,7 +363,7 @@ void get_quarter_column(char * matrix, char * column, int n2, int L_R){
     //printf("col: %s\n", column);
 }
 
-void get_quarter_row(char * matrix, char * row, int n2, int T_B){
+void get_quarter_row(char * matrix, char * row, int T_B){
     int k = 0, m = 0;
     int current_T_B = 0; // 0 Top, 1 Bot
     
@@ -356,7 +384,7 @@ void get_quarter_row(char * matrix, char * row, int n2, int T_B){
 }
 
 
-void process_quarter(int *cfd_p, int *fd_p, int n2, const char *name_str){
+void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
     int n2_x_n2 = n2 * n2;
     
     // Allocated spaces
@@ -385,7 +413,7 @@ void process_quarter(int *cfd_p, int *fd_p, int n2, const char *name_str){
         exit(EXIT_FAILURE);
     }
 
-    multiply_matrices(buffer1, buffer2, n2, result);
+    multiply_matrices(buffer1, buffer2, result);
     //display_arr(result, n2_x_n2/4);
     
     
@@ -406,7 +434,7 @@ void process_quarter(int *cfd_p, int *fd_p, int n2, const char *name_str){
 
 }
 
-void multiply_matrices(char *m1, char *m2, int n2, int *result){
+void multiply_matrices(char *m1, char *m2, int *result){
     int temp = 0;
     int c = 0;
     for(int i = 0; i < n2/2; i++){
@@ -452,7 +480,7 @@ void display_arr(double *array, int n){
     for(int i = 0; i < n-1; i++){
         printf("%.3f, ", array[i]);
     }
-    printf("%f]\n", array[n-1]);
+    printf("%.3f]\n", array[n-1]);
 }
 
 void display_arr_2d(double **array, int n){
@@ -533,4 +561,19 @@ void svd(double **A, double *S2, int n){
     }
     if (SweepCount > slimit)
         printf("Warning: Reached maximum number of sweeps (%d) in SVD routine...\n" ,slimit);
+}
+
+
+void handle_SIGINT(int sig_no){
+    if(sig_no == SIGINT){
+        //Terminate children
+        for(int i = 0; i < 4; i++){
+            kill(pid[i], SIGTERM);
+        }
+        fprintf(stderr, "Aborting program due to SIGINT\n");
+        exit(EXIT_FAILURE);
+    }
+    else{
+        fprintf(stderr, "Signal handler called, no action\n");
+    }
 }
