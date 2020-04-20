@@ -60,10 +60,17 @@ int parse_arguments(char *input1_path, char *input2_path, int *n, int argc, char
     for(; optind < argc; optind++){ //when some extra arguments are passed
         printf("Given extra arguments: %s\n", argv[optind]);
     }
+    
+    if(strlen(input1_path) == 0 || strlen(input2_path) == 0){
+        print_usage();
+        return 1;
+    }
+    
     return 0;
 }
 
 void print_usage(void){
+    printf("Input path missing\n");
     printf("\nUsage:\n"
            "./programA [-i1 input 2 file path] [-i2 input 2 file path] [-n 2^n matrix size]\n");
 }
