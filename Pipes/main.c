@@ -215,7 +215,7 @@ int main(int argc, char * argv[]) {
             
             combined_result = malloc(sizeof(double*)*n2*2);
             for(int i=0;i<2*n2;i++)
-                 combined_result[i] = malloc(sizeof(double)*n2*2);
+                 combined_result[i] = malloc(sizeof(double)*n2);
         
             singular_values = malloc(n2 * sizeof(double));
             
@@ -265,23 +265,23 @@ int main(int argc, char * argv[]) {
             if(pid[0] == 0){
                 printf("I'm P2 [pid: %d, ppid: %d]\n",getpid(),getppid());
                 process_quarter(cfd_p2, fd_p2, "P2");
-                exit(EXIT_SUCCESS);
+                _exit(EXIT_SUCCESS);
             }
             else if(pid[1] == 0){
                 printf("I'm P3 [pid: %d, ppid: %d]\n",getpid(),getppid());
                 process_quarter(cfd_p3, fd_p3, "P3");
-                exit(EXIT_SUCCESS);
+                _exit(EXIT_SUCCESS);
             }
             else if(pid[2] == 0){
                 printf("I'm P4 [pid: %d, ppid: %d]\n",getpid(),getppid());
                 process_quarter(cfd_p4, fd_p4, "P4");
-                exit(EXIT_SUCCESS);
+                _exit(EXIT_SUCCESS);
                 
             }
             else if(pid[3] == 0){
                 printf("I'm P5 [pid: %d, ppid: %d]\n",getpid(),getppid());
                 process_quarter(cfd_p5, fd_p5, "P5");
-                exit(EXIT_SUCCESS);
+                _exit(EXIT_SUCCESS);
             }
         }
         // ===================================================================
@@ -418,6 +418,7 @@ void process_quarter(int *cfd_p, int *fd_p, const char *name_str){
     
     free(buffer1);
     free(buffer2);
+    free(result);
 }
 
 void multiply_matrices(char *m1, char *m2, int *result){
